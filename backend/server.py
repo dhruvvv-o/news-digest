@@ -269,10 +269,19 @@ async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List
                         snippet = snippet[:-(len(sep))].strip()
                         break
             
-            # If no image found in RSS, try to extract from article page
+            # Extract better metadata from actual article page
             article_link = entry.get('link', '')
-            if not image_url and article_link:
-                image_url = await extract_article_image(article_link)
+            if article_link:
+                # Try to get real image and description from article
+                extracted_image, extracted_description = await extract_article_metadata(article_link)
+                
+                # Use extracted image if we don't have one or if current is Google logo
+                if extracted_image and (not image_url or 'google' in str(image_url).lower()):
+                    image_url = extracted_image
+                
+                # Use extracted description if it's better than RSS snippet
+                if extracted_description and len(extracted_description) > len(snippet):
+                    snippet = extracted_description
             
             # Use placeholder image if still none found
             if not image_url:
