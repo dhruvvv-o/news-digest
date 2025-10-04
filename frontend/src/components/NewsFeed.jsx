@@ -269,6 +269,7 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
           </div>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 }
