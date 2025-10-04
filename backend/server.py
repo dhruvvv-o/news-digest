@@ -342,6 +342,8 @@ async def get_public_news(response: Response):
 
 @api_router.get("/news", response_model=List[NewsArticle])
 async def get_news(response: Response, current_user: dict = Depends(get_current_user)):
+    import random
+    
     # Add cache control headers to prevent caching
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
@@ -364,6 +366,9 @@ async def get_news(response: Response, current_user: dict = Depends(get_current_
     for feed_url in prefs.get('custom_rss_feeds', []):
         articles = await fetch_rss_feed(feed_url, "Custom Feed")
         all_articles.extend(articles)
+    
+    # Shuffle articles to show variety on each refresh
+    random.shuffle(all_articles)
     
     return all_articles
 
