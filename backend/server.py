@@ -227,17 +227,21 @@ async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List
                         snippet = snippet[:-(len(sep))].strip()
                         break
             
-            # Use placeholder image if none found
+            # If no image found in RSS, try to extract from article page
+            article_link = entry.get('link', '')
+            if not image_url and article_link:
+                image_url = await extract_article_image(article_link)
+            
+            # Use placeholder image if still none found
             if not image_url:
-                # Use picsum for random placeholder images
+                # Use picsum for random placeholder images as last resort
                 import hashlib
-                # Create a deterministic seed from the article title
                 seed = int(hashlib.md5(title.encode()).hexdigest()[:8], 16) % 1000
                 image_url = f"https://picsum.photos/seed/{seed}/600/400"
             
             article = NewsArticle(
                 title=title,
-                link=entry.get('link', ''),
+                link=article_link,
                 image=image_url,
                 snippet=snippet,
                 published=entry.get('published', ''),
