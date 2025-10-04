@@ -557,24 +557,6 @@ body {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9375rem;
   line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.snippet-separator {
-  color: rgba(0, 255, 255, 0.5);
-  margin: 0 0.5rem;
-  font-weight: 400;
-}
-
-.news-source-inline {
-  color: #00FFFF;
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .news-card-actions {
