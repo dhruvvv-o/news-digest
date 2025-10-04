@@ -200,14 +200,15 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
       </main>
 
       {/* Settings Dialog */}
-      <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="settings-dialog" data-testid="settings-dialog">
-          <DialogHeader>
-            <DialogTitle>Settings</DialogTitle>
-            <DialogDescription>Manage your news preferences and RSS feeds</DialogDescription>
-          </DialogHeader>
+      {isAuthenticated && (
+        <Dialog open={showSettings} onOpenChange={setShowSettings}>
+          <DialogContent className="settings-dialog" data-testid="settings-dialog">
+            <DialogHeader>
+              <DialogTitle>Settings</DialogTitle>
+              <DialogDescription>Manage your news preferences and RSS feeds</DialogDescription>
+            </DialogHeader>
 
-          <div className="settings-content">
+            <div className="settings-content">
             <div className="settings-section">
               <h3 className="settings-section-title">Selected Categories</h3>
               <div className="categories-list">
