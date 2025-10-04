@@ -108,11 +108,15 @@ body {
   backdrop-filter: blur(12px);
 }
 
-.auth-card h2 {
+.auth-card [class*="CardTitle"],
+.auth-card h2,
+.auth-card h3 {
   color: #FFFFFF !important;
 }
 
-.auth-card .card-description {
+.auth-card [class*="CardDescription"],
+.auth-card .card-description,
+.auth-card p {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
