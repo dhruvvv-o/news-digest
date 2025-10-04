@@ -83,6 +83,14 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.auth-card h2 {
+  color: #FFFFFF !important;
+}
+
+.auth-card .card-description {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
