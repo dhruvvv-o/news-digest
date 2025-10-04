@@ -331,8 +331,8 @@ async def get_news(current_user: dict = Depends(get_current_user)):
     return all_articles
 
 @api_router.get("/news/search", response_model=List[NewsArticle])
-async def search_news(query: str, current_user: dict = Depends(get_current_user)):
-    # Google News search RSS
+async def search_news(query: str):
+    # Google News search RSS - public endpoint, no auth required
     from urllib.parse import quote
     encoded_query = quote(query)
     search_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
@@ -340,10 +340,7 @@ async def search_news(query: str, current_user: dict = Depends(get_current_user)
     return articles
 
 @api_router.post("/news/summarize", response_model=SummarizeResponse)
-async def summarize_article(
-    request: SummarizeRequest,
-    current_user: dict = Depends(get_current_user)
-):
+async def summarize_article(request: SummarizeRequest):
     # Extract article content
     content = await extract_article_content(request.article_url)
     
