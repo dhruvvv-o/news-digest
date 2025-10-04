@@ -336,7 +336,12 @@ async def get_public_news(response: Response):
     return all_articles
 
 @api_router.get("/news", response_model=List[NewsArticle])
-async def get_news(current_user: dict = Depends(get_current_user)):
+async def get_news(response: Response, current_user: dict = Depends(get_current_user)):
+    # Add cache control headers to prevent caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     # Get user preferences
     prefs = await db.preferences.find_one({"user_id": current_user['user_id']})
     if not prefs:
