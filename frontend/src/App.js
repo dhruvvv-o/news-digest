@@ -27,6 +27,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasCategories, setHasCategories] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
+  const [showCategorySelector, setShowCategorySelector] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -47,6 +49,8 @@ function App() {
       // Check if user has selected categories
       if (response.data.categories && response.data.categories.length > 0) {
         setHasCategories(true);
+      } else {
+        setShowCategorySelector(true);
       }
     } catch (error) {
       localStorage.removeItem("token");
@@ -58,17 +62,25 @@ function App() {
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
+    setShowAuth(false);
+    setShowCategorySelector(true);
     checkAuth();
   };
 
   const handleCategoriesSelected = () => {
     setHasCategories(true);
+    setShowCategorySelector(false);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setHasCategories(false);
+    window.location.reload();
+  };
+
+  const handleShowAuth = () => {
+    setShowAuth(true);
   };
 
   if (loading) {
@@ -86,12 +98,16 @@ function App() {
           <Route
             path="/"
             element={
-              !isAuthenticated ? (
-                <Auth onAuthSuccess={handleAuthSuccess} />
-              ) : !hasCategories ? (
+              showAuth ? (
+                <Auth onAuthSuccess={handleAuthSuccess} onClose={() => setShowAuth(false)} />
+              ) : showCategorySelector && isAuthenticated ? (
                 <CategorySelector onComplete={handleCategoriesSelected} />
               ) : (
-                <NewsFeed onLogout={handleLogout} />
+                <NewsFeed 
+                  onLogout={handleLogout} 
+                  isAuthenticated={isAuthenticated}
+                  onShowAuth={handleShowAuth}
+                />
               )
             }
           />
