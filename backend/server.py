@@ -152,9 +152,19 @@ async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List
             if hasattr(entry, 'summary'):
                 soup = BeautifulSoup(entry.summary, 'html.parser')
                 snippet = soup.get_text()[:300]
+                # Try to find image in summary HTML
+                if not image_url:
+                    img_tag = soup.find('img')
+                    if img_tag and img_tag.get('src'):
+                        image_url = img_tag.get('src')
             elif hasattr(entry, 'description'):
                 soup = BeautifulSoup(entry.description, 'html.parser')
                 snippet = soup.get_text()[:300]
+                # Try to find image in description HTML
+                if not image_url:
+                    img_tag = soup.find('img')
+                    if img_tag and img_tag.get('src'):
+                        image_url = img_tag.get('src')
             
             # Try to extract publisher from title (usually after the last dash or hyphen)
             title = entry.get('title', 'No Title')
