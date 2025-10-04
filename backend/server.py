@@ -351,7 +351,7 @@ async def summarize_article(request: SummarizeRequest):
     try:
         chat = LlmChat(
             api_key=os.environ.get('EMERGENT_LLM_KEY'),
-            session_id=f"summarize_{current_user['user_id']}_{uuid.uuid4()}",
+            session_id=f"summarize_{uuid.uuid4()}",
             system_message="You are a helpful assistant that summarizes news articles concisely. Provide a clear, informative summary in 3-5 sentences."
         ).with_model("openai", "gpt-5")
         
