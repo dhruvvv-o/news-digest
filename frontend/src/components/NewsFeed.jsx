@@ -10,7 +10,7 @@ import { Search, Settings, LogOut, Rss, Plus, Trash2 } from "lucide-react";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-export default function NewsFeed({ onLogout }) {
+export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
