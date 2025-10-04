@@ -536,11 +536,9 @@ body {
 }
 
 .news-source {
-  color: #00FFFF;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  font-size: 0.9375rem;
 }
 
 .news-date {
