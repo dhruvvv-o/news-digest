@@ -363,7 +363,12 @@ async def get_news(response: Response, current_user: dict = Depends(get_current_
     return all_articles
 
 @api_router.get("/news/search", response_model=List[NewsArticle])
-async def search_news(query: str):
+async def search_news(query: str, response: Response):
+    # Add cache control headers to prevent caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     # Google News search RSS - public endpoint, no auth required
     from urllib.parse import quote
     encoded_query = quote(query)
