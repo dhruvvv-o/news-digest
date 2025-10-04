@@ -42,6 +42,11 @@ export default function Auth({ onAuthSuccess, onClose }) {
         <div className="auth-header">
           <h1 className="auth-title" data-testid="app-title">AI News Digest</h1>
           <p className="auth-subtitle">Stay informed with AI-powered news summaries</p>
+          {onClose && (
+            <button className="auth-close-button" onClick={onClose} data-testid="auth-close-button">
+              ✕
+            </button>
+          )}
         </div>
 
         <Card className="auth-card">
