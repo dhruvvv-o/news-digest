@@ -60,8 +60,10 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
 
     setSearching(true);
     try {
+      // Add timestamp to prevent caching
+      const timestamp = new Date().getTime();
       const response = await axios.get(`${API}/news/search`, {
-        params: { query: searchQuery },
+        params: { query: searchQuery, t: timestamp },
       });
       setArticles(response.data);
     } catch (error) {
