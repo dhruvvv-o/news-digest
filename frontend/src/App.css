@@ -108,15 +108,21 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.auth-card * {
+  color: inherit;
+}
+
 .auth-card [class*="CardTitle"],
 .auth-card h2,
-.auth-card h3 {
+.auth-card h3,
+.auth-card [data-testid="auth-card-title"] {
   color: #FFFFFF !important;
+  font-weight: 700 !important;
 }
 
 .auth-card [class*="CardDescription"],
 .auth-card .card-description,
-.auth-card p {
+.auth-card p:not(.error-message) {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
