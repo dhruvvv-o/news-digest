@@ -126,6 +126,49 @@ GOOGLE_NEWS_FEEDS = {
     "Science": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en",
 }
 
+async def extract_article_image(url: str) -> str:
+    """Extract featured image from article URL"""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
+                if response.status == 200:
+                    html = await response.text()
+                    soup = BeautifulSoup(html, 'html.parser')
+                    
+                    # Try Open Graph image first
+                    og_image = soup.find('meta', property='og:image')
+                    if og_image and og_image.get('content'):
+                        return og_image.get('content')
+                    
+                    # Try Twitter card image
+                    twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
+                    if twitter_image and twitter_image.get('content'):
+                        return twitter_image.get('content')
+                    
+                    # Try to find first large image in article
+                    images = soup.find_all('img')
+                    for img in images:
+                        src = img.get('src') or img.get('data-src')
+                        if src and not any(skip in src.lower() for skip in ['logo', 'icon', 'avatar', 'sprite']):
+                            # Check if image seems large enough (URL hints)
+                            if any(hint in src.lower() for hint in ['article', 'content', 'featured', 'hero', 'main']):
+                                return src
+                            # If img has width/height attributes, check size
+                            width = img.get('width')
+                            if width and str(width).isdigit() and int(width) > 400:
+                                return src
+                    
+                    # Return first decent image as fallback
+                    if images and len(images) > 0:
+                        for img in images:
+                            src = img.get('src') or img.get('data-src')
+                            if src and src.startswith('http'):
+                                return src
+    except Exception as e:
+        logging.error(f"Error extracting image from {url}: {str(e)}")
+    
+    return None
+
 async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List[NewsArticle]:
     """Fetch and parse RSS feed"""
     try:
