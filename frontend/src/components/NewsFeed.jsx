@@ -112,24 +112,36 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
         <div className="header-content">
           <h1 className="header-title" data-testid="news-header-title">AI News Digest</h1>
           <div className="header-actions">
-            <Button
-              variant="ghost"
-              size="icon"
-              data-testid="settings-button"
-              onClick={() => setShowSettings(true)}
-              className="header-button"
-            >
-              <Settings size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              data-testid="logout-button"
-              onClick={onLogout}
-              className="header-button"
-            >
-              <LogOut size={20} />
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  data-testid="settings-button"
+                  onClick={() => setShowSettings(true)}
+                  className="header-button"
+                >
+                  <Settings size={20} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  data-testid="logout-button"
+                  onClick={onLogout}
+                  className="header-button"
+                >
+                  <LogOut size={20} />
+                </Button>
+              </>
+            ) : (
+              <Button
+                data-testid="show-auth-button"
+                onClick={onShowAuth}
+                className="auth-action-button"
+              >
+                Sign Up / Login
+              </Button>
+            )}
           </div>
         </div>
 
