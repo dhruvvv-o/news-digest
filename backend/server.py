@@ -315,8 +315,13 @@ async def remove_rss_feed(
     return {"message": "RSS feed removed"}
 
 @api_router.get("/news/public", response_model=List[NewsArticle])
-async def get_public_news():
+async def get_public_news(response: Response):
     """Get news for non-authenticated users - default categories"""
+    # Add cache control headers to prevent caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     all_articles = []
     
     # Default categories for public users
