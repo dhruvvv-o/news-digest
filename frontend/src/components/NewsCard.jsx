@@ -58,7 +58,7 @@ export default function NewsCard({ article }) {
           </div>
           <CardTitle className="news-card-title" data-testid="news-title">{article.title}</CardTitle>
           <CardDescription className="news-card-snippet" data-testid="news-snippet">
-            {article.snippet} | {article.source}
+            {article.snippet}
           </CardDescription>
         </CardHeader>
 
