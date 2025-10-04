@@ -529,20 +529,18 @@ body {
 
 .news-card-meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 0.75rem;
   font-size: 0.875rem;
 }
 
-.news-source {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 400;
-  font-size: 0.9375rem;
-}
-
-.news-date {
-  color: rgba(255, 255, 255, 0.5);
+.news-category {
+  color: #00FFFF;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
 }
 
 .news-card-title {
