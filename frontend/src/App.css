@@ -350,6 +350,24 @@ body {
   background: rgba(0, 255, 255, 0.1);
 }
 
+.auth-action-button {
+  background: #00FFFF;
+  color: #000000;
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+}
+
+.auth-action-button:hover {
+  background: #00E5E5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+}
+
 .search-form {
   max-width: 1400px;
   margin: 0 auto;
