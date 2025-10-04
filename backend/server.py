@@ -126,7 +126,7 @@ GOOGLE_NEWS_FEEDS = {
     "Science": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en",
 }
 
-async def fetch_rss_feed(feed_url: str, source_name: str = "RSS Feed") -> List[NewsArticle]:
+async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List[NewsArticle]:
     """Fetch and parse RSS feed"""
     try:
         feed = feedparser.parse(feed_url)
@@ -145,8 +145,10 @@ async def fetch_rss_feed(feed_url: str, source_name: str = "RSS Feed") -> List[N
                         image_url = enclosure.get('href')
                         break
             
-            # Extract snippet
+            # Extract snippet and source/publisher from title
             snippet = ""
+            publisher = "Unknown"
+            
             if hasattr(entry, 'summary'):
                 soup = BeautifulSoup(entry.summary, 'html.parser')
                 snippet = soup.get_text()[:300]
@@ -154,13 +156,21 @@ async def fetch_rss_feed(feed_url: str, source_name: str = "RSS Feed") -> List[N
                 soup = BeautifulSoup(entry.description, 'html.parser')
                 snippet = soup.get_text()[:300]
             
+            # Try to extract publisher from title (usually after the last dash or hyphen)
+            title = entry.get('title', 'No Title')
+            if ' - ' in title:
+                publisher = title.split(' - ')[-1].strip()
+            elif ' | ' in title:
+                publisher = title.split(' | ')[-1].strip()
+            
             article = NewsArticle(
-                title=entry.get('title', 'No Title'),
+                title=title,
                 link=entry.get('link', ''),
                 image=image_url,
                 snippet=snippet,
                 published=entry.get('published', ''),
-                source=source_name
+                source=publisher,
+                category=category_name
             )
             articles.append(article)
         
