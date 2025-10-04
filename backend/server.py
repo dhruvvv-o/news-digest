@@ -317,6 +317,8 @@ async def remove_rss_feed(
 @api_router.get("/news/public", response_model=List[NewsArticle])
 async def get_public_news(response: Response):
     """Get news for non-authenticated users - default categories"""
+    import random
+    
     # Add cache control headers to prevent caching
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
@@ -332,6 +334,9 @@ async def get_public_news(response: Response):
         if category in GOOGLE_NEWS_FEEDS:
             articles = await fetch_rss_feed(GOOGLE_NEWS_FEEDS[category], category)
             all_articles.extend(articles)
+    
+    # Shuffle articles to show variety on each refresh
+    random.shuffle(all_articles)
     
     return all_articles
 
