@@ -54,13 +54,11 @@ export default function NewsCard({ article }) {
 
         <CardHeader className="news-card-header">
           <div className="news-card-meta">
-            {article.published && (
-              <span className="news-date">{new Date(article.published).toLocaleDateString()}</span>
-            )}
+            <span className="news-category" data-testid="news-category">{article.category}</span>
           </div>
           <CardTitle className="news-card-title" data-testid="news-title">{article.title}</CardTitle>
           <CardDescription className="news-card-snippet" data-testid="news-snippet">
-            {article.snippet} | <span className="news-source" data-testid="news-source">{article.source}</span>
+            {article.snippet} | {article.source}
           </CardDescription>
         </CardHeader>
 
