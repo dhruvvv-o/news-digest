@@ -317,7 +317,9 @@ async def get_news(current_user: dict = Depends(get_current_user)):
 @api_router.get("/news/search", response_model=List[NewsArticle])
 async def search_news(query: str, current_user: dict = Depends(get_current_user)):
     # Google News search RSS
-    search_url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+    from urllib.parse import quote
+    encoded_query = quote(query)
+    search_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
     articles = await fetch_rss_feed(search_url, "Search Results")
     return articles
 
