@@ -21,13 +21,21 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
 
   useEffect(() => {
     fetchNews();
-    fetchPreferences();
-  }, []);
+    if (isAuthenticated) {
+      fetchPreferences();
+    }
+  }, [isAuthenticated]);
 
   const fetchNews = async () => {
     try {
-      const response = await axios.get(`${API}/news`);
-      setArticles(response.data);
+      if (isAuthenticated) {
+        const response = await axios.get(`${API}/news`);
+        setArticles(response.data);
+      } else {
+        // For non-authenticated users, fetch default categories (Tech, World, Business)
+        const response = await axios.get(`${API}/news/public`);
+        setArticles(response.data);
+      }
     } catch (error) {
       console.error("Failed to fetch news:", error);
     } finally {
