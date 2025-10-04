@@ -126,48 +126,90 @@ GOOGLE_NEWS_FEEDS = {
     "Science": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en",
 }
 
-async def extract_article_image(url: str) -> str:
-    """Extract featured image from article URL"""
+async def extract_article_metadata(url: str) -> tuple:
+    """Extract image and description from article URL, following redirects"""
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
+            # Follow redirects to get actual article URL
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=8), allow_redirects=True) as response:
                 if response.status == 200:
+                    final_url = str(response.url)
                     html = await response.text()
                     soup = BeautifulSoup(html, 'html.parser')
+                    
+                    # Extract image
+                    image_url = None
                     
                     # Try Open Graph image first
                     og_image = soup.find('meta', property='og:image')
                     if og_image and og_image.get('content'):
-                        return og_image.get('content')
+                        img_content = og_image.get('content')
+                        # Avoid Google News logo
+                        if 'google' not in img_content.lower() or 'gstatic' in img_content.lower():
+                            image_url = img_content
                     
                     # Try Twitter card image
-                    twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
-                    if twitter_image and twitter_image.get('content'):
-                        return twitter_image.get('content')
+                    if not image_url:
+                        twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
+                        if twitter_image and twitter_image.get('content'):
+                            image_url = twitter_image.get('content')
+                    
+                    # Try article:image tag
+                    if not image_url:
+                        article_image = soup.find('meta', property='article:image')
+                        if article_image and article_image.get('content'):
+                            image_url = article_image.get('content')
                     
                     # Try to find first large image in article
-                    images = soup.find_all('img')
-                    for img in images:
-                        src = img.get('src') or img.get('data-src')
-                        if src and not any(skip in src.lower() for skip in ['logo', 'icon', 'avatar', 'sprite']):
-                            # Check if image seems large enough (URL hints)
-                            if any(hint in src.lower() for hint in ['article', 'content', 'featured', 'hero', 'main']):
-                                return src
-                            # If img has width/height attributes, check size
-                            width = img.get('width')
-                            if width and str(width).isdigit() and int(width) > 400:
-                                return src
-                    
-                    # Return first decent image as fallback
-                    if images and len(images) > 0:
+                    if not image_url:
+                        images = soup.find_all('img')
                         for img in images:
                             src = img.get('src') or img.get('data-src')
-                            if src and src.startswith('http'):
-                                return src
+                            if src and not any(skip in src.lower() for skip in ['logo', 'icon', 'avatar', 'sprite', 'pixel', 'tracking']):
+                                # Check if image seems large enough
+                                if any(hint in src.lower() for hint in ['article', 'content', 'featured', 'hero', 'main', 'wp-content']):
+                                    image_url = src
+                                    break
+                                width = img.get('width')
+                                if width and str(width).isdigit() and int(width) > 400:
+                                    image_url = src
+                                    break
+                    
+                    # Extract description/sub-headline
+                    description = None
+                    
+                    # Try meta description
+                    meta_desc = soup.find('meta', attrs={'name': 'description'})
+                    if meta_desc and meta_desc.get('content'):
+                        description = meta_desc.get('content')
+                    
+                    # Try Open Graph description
+                    if not description:
+                        og_desc = soup.find('meta', property='og:description')
+                        if og_desc and og_desc.get('content'):
+                            description = og_desc.get('content')
+                    
+                    # Try article deck/sub-headline (common class names)
+                    if not description:
+                        for tag in soup.find_all(['p', 'div'], class_=['deck', 'dek', 'subhead', 'sub-headline', 'standfirst', 'summary']):
+                            if tag.get_text().strip():
+                                description = tag.get_text().strip()[:300]
+                                break
+                    
+                    # Try first paragraph with substantial content
+                    if not description:
+                        paragraphs = soup.find_all('p')
+                        for p in paragraphs:
+                            text = p.get_text().strip()
+                            if len(text) > 100 and not any(skip in text.lower() for skip in ['cookie', 'subscribe', 'sign up', 'newsletter']):
+                                description = text[:300]
+                                break
+                    
+                    return (image_url, description)
     except Exception as e:
-        logging.error(f"Error extracting image from {url}: {str(e)}")
+        logging.error(f"Error extracting metadata from {url}: {str(e)}")
     
-    return None
+    return (None, None)
 
 async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List[NewsArticle]:
     """Fetch and parse RSS feed"""
