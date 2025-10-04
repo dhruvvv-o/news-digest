@@ -186,19 +186,11 @@ async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List
             
             # Use placeholder image if none found
             if not image_url:
-                # Generate a placeholder based on category
-                category_colors = {
-                    "Tech": "00FFFF",
-                    "Sports": "FF6B6B",
-                    "Business": "4ECDC4",
-                    "Entertainment": "FFD93D",
-                    "World": "95E1D3",
-                    "Health": "38A3A5",
-                    "Science": "80ED99"
-                }
-                color = category_colors.get(category_name, "00FFFF")
-                # Use a simple colored placeholder
-                image_url = f"https://via.placeholder.com/600x400/{color}/000000?text={category_name}+News"
+                # Use picsum for random placeholder images
+                import hashlib
+                # Create a deterministic seed from the article title
+                seed = int(hashlib.md5(title.encode()).hexdigest()[:8], 16) % 1000
+                image_url = f"https://picsum.photos/seed/{seed}/600/400"
             
             article = NewsArticle(
                 title=title,
