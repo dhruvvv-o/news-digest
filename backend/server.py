@@ -292,6 +292,22 @@ async def remove_rss_feed(
     )
     return {"message": "RSS feed removed"}
 
+@api_router.get("/news/public", response_model=List[NewsArticle])
+async def get_public_news():
+    """Get news for non-authenticated users - default categories"""
+    all_articles = []
+    
+    # Default categories for public users
+    default_categories = ["Tech", "World", "Business"]
+    
+    # Fetch Google News for default categories
+    for category in default_categories:
+        if category in GOOGLE_NEWS_FEEDS:
+            articles = await fetch_rss_feed(GOOGLE_NEWS_FEEDS[category], category)
+            all_articles.extend(articles)
+    
+    return all_articles
+
 @api_router.get("/news", response_model=List[NewsArticle])
 async def get_news(current_user: dict = Depends(get_current_user)):
     # Get user preferences
