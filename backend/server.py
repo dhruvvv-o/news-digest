@@ -78,6 +78,7 @@ class NewsArticle(BaseModel):
     snippet: str
     published: Optional[str] = None
     source: str
+    category: str
 
 class SummarizeRequest(BaseModel):
     article_url: str
