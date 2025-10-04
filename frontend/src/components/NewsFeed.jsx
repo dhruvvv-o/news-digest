@@ -70,6 +70,10 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
   };
 
   const handleAddRssFeed = async () => {
+    if (!isAuthenticated) {
+      onShowAuth();
+      return;
+    }
     if (!newRssFeed.trim()) return;
 
     try {
@@ -83,6 +87,10 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
   };
 
   const handleRemoveRssFeed = async (feedUrl) => {
+    if (!isAuthenticated) {
+      onShowAuth();
+      return;
+    }
     try {
       await axios.delete(`${API}/rss-feeds`, { params: { feed_url: feedUrl } });
       fetchPreferences();
