@@ -610,8 +610,14 @@ body {
   overflow-y: auto;
 }
 
-.summary-dialog * {
-  color: inherit;
+.summary-dialog h2,
+.summary-dialog [class*="DialogTitle"] {
+  color: #FFFFFF !important;
+}
+
+.summary-dialog [class*="DialogDescription"],
+.summary-dialog p {
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .summary-article-title {
