@@ -163,6 +163,17 @@ async def fetch_rss_feed(feed_url: str, category_name: str = "RSS Feed") -> List
             elif ' | ' in title:
                 publisher = title.split(' | ')[-1].strip()
             
+            # Clean snippet: remove publisher name if it appears at the end
+            if publisher and publisher != "Unknown":
+                # Remove publisher from end of snippet
+                if snippet.endswith(publisher):
+                    snippet = snippet[:-(len(publisher))].strip()
+                # Also try with common separators
+                for sep in [f" {publisher}", f"- {publisher}", f"| {publisher}", f"  {publisher}"]:
+                    if snippet.endswith(sep):
+                        snippet = snippet[:-(len(sep))].strip()
+                        break
+            
             article = NewsArticle(
                 title=title,
                 link=entry.get('link', ''),
