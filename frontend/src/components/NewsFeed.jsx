@@ -28,12 +28,14 @@ export default function NewsFeed({ onLogout, isAuthenticated, onShowAuth }) {
 
   const fetchNews = async () => {
     try {
+      // Add timestamp to prevent caching
+      const timestamp = new Date().getTime();
       if (isAuthenticated) {
-        const response = await axios.get(`${API}/news`);
+        const response = await axios.get(`${API}/news?t=${timestamp}`);
         setArticles(response.data);
       } else {
         // For non-authenticated users, fetch default categories (Tech, World, Business)
-        const response = await axios.get(`${API}/news/public`);
+        const response = await axios.get(`${API}/news/public?t=${timestamp}`);
         setArticles(response.data);
       }
     } catch (error) {
