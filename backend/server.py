@@ -247,6 +247,11 @@ async def get_preferences(current_user: dict = Depends(get_current_user)):
         # Create default preferences
         prefs = UserPreferences(user_id=current_user['user_id'])
         await db.preferences.insert_one(prefs.dict())
+        return prefs.dict()
+    
+    # Remove MongoDB's _id field for JSON serialization
+    if '_id' in prefs:
+        del prefs['_id']
     return prefs
 
 @api_router.put("/preferences")
