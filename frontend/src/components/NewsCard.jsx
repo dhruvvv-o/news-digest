@@ -27,6 +27,8 @@ export default function NewsCard({ article }) {
     try {
       const response = await axios.post(`${API}/news/summarize`, {
         article_url: article.link,
+        article_title: article.title,
+        article_snippet: article.snippet
       });
       setSummary(response.data.summary);
     } catch (err) {
