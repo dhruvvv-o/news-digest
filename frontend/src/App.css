@@ -706,8 +706,14 @@ body {
   overflow-y: auto;
 }
 
-.settings-dialog * {
-  color: inherit;
+.settings-dialog h2,
+.settings-dialog [class*="DialogTitle"] {
+  color: #FFFFFF !important;
+}
+
+.settings-dialog [class*="DialogDescription"],
+.settings-dialog p:not(.error-message) {
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .settings-content {
