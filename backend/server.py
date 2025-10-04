@@ -361,24 +361,30 @@ async def search_news(query: str):
     articles = await fetch_rss_feed(search_url, "Search Results")
     return articles
 
+class SummarizeRequestWithContext(BaseModel):
+    article_url: str
+    article_title: str
+    article_snippet: str
+
 @api_router.post("/news/summarize", response_model=SummarizeResponse)
-async def summarize_article(request: SummarizeRequest):
-    # Extract article content
+async def summarize_article(request: SummarizeRequestWithContext):
+    # Try to extract article content
     content = await extract_article_content(request.article_url)
     
-    if not content:
-        raise HTTPException(status_code=400, detail="Could not extract article content")
+    # If we can't extract content, use title and snippet
+    if not content or len(content) < 100:
+        content = f"Title: {request.article_title}\n\nPreview: {request.article_snippet}"
     
     # Use OpenAI GPT-5 to summarize
     try:
         chat = LlmChat(
             api_key=os.environ.get('EMERGENT_LLM_KEY'),
             session_id=f"summarize_{uuid.uuid4()}",
-            system_message="You are a helpful assistant that summarizes news articles concisely. Provide a clear, informative summary in 3-5 sentences."
+            system_message="You are a helpful assistant that summarizes news articles. Based on the article title and preview/content provided, create a clear, informative summary in 3-5 sentences explaining what the article is about. Do not ask for more information - provide a summary based on what is given."
         ).with_model("openai", "gpt-5")
         
         user_message = UserMessage(
-            text=f"Please summarize this article:\n\n{content}"
+            text=f"Please provide a concise summary of this news article:\n\n{content}"
         )
         
         summary = await chat.send_message(user_message)
